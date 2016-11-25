@@ -24,7 +24,7 @@ import java.util.Set;
 public  class Dialog_Tag extends DialogFragment {
     String id_project;
     ArrayList<String> selTags;
-    private EditNameDialogListener listener;
+    public EditNameDialogListener listener;
     /**
      * Create a new instance of MyDialogFragment, providing "num"
      * as an argument.
@@ -35,7 +35,6 @@ public  class Dialog_Tag extends DialogFragment {
         Bundle args = new Bundle();
         args.putString("project", project);
         f.setArguments(args);
-
         return f;
     }
 
@@ -43,7 +42,7 @@ public  class Dialog_Tag extends DialogFragment {
         void onFinishEditDialog(ArrayList<String> inputText);
     }
 
-    public void closeDialog(View v){
+    public void exitDialog(){
         listener.onFinishEditDialog(selTags);
         this.dismiss();
     }
@@ -68,6 +67,7 @@ public  class Dialog_Tag extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         ViewGroup v = (ViewGroup) inflater.inflate(R.layout.dialog_tag, container, false);
         id_project = getArguments().getString("project");
         Log.e("XABLAU",id_project);
@@ -75,6 +75,13 @@ public  class Dialog_Tag extends DialogFragment {
         Cursor ic = dbc.getInsightCardsFromProjects(id_project);
         ic.moveToFirst();
         ArrayList<String> t = new ArrayList<String>();
+        (v.findViewById(R.id.checkBoxAll)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                onCheckBoxClick(v);
+            }
+        });
+        ViewGroup g = (ViewGroup) v.findViewById(R.id.checkBoxList);
         while(!ic.isAfterLast()){
             String[] allt = ic.getString(3).split(" ");
             for (String i: allt) {
@@ -83,12 +90,29 @@ public  class Dialog_Tag extends DialogFragment {
                     t.add(i);
                     CheckBox ck = new CheckBox(this.getActivity());
                     ck.setText(i);
-                    v.addView(ck);
+                    ck.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            // TODO Auto-generated method stub
+
+                            onCheckBoxClick(v);
+                        }
+                    });
+                    g.addView(ck);
+
                 }
             }
             ic.moveToNext();
         }
 
+        Button dialogButton = (Button)v.findViewById(R.id.exitDialog);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Log.v("PIRU","RADA2");
+                exitDialog();
+            }
+        });
         return v;
     }
 }
